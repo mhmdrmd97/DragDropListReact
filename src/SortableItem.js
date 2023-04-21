@@ -1,11 +1,15 @@
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
+import { atom, useAtomValue } from "jotai";
+import { handleVisibilityAtom, selectedItemAtom } from "./atoms";
+
 
 
 export function SortableItem({id,topHandle,leftHandle,HandleIcon, children}) {
     // props.id
     // JavaScript
-
+const handleVisibility = useAtomValue(handleVisibilityAtom)
+const selectedItem = useAtomValue(selectedItemAtom)
     const {
         attributes,
         listeners,
@@ -21,22 +25,22 @@ export function SortableItem({id,topHandle,leftHandle,HandleIcon, children}) {
     }
 
     return (
-        <div ref={setNodeRef} style={{...style}} >
+        <div ref={setNodeRef} style={{...style,userSelect:"none"}} >
             
-            <SortableContainer HandleIcon={HandleIcon??<div>handle</div>} topHandle={topHandle??0} leftHandle={leftHandle??0} attributes={attributes} listners={listeners}>
+            <SortableContainer isHandleVisible={handleVisibility && selectedItem.id === id } HandleIcon={HandleIcon??<div>handle</div>} topHandle={topHandle??0} leftHandle={leftHandle??0} attributes={attributes} listners={listeners}>
            {children}
             </SortableContainer>
         </div>
     )
 }
 
-export const SortableContainer = ({attributes,listners,topHandle,leftHandle,HandleIcon,children})=>{
+export const SortableContainer = ({attributes,listners,topHandle,leftHandle,HandleIcon,isHandleVisible,children})=>{
     return <div style={{position:"relative", minWidth:"100%",minHeight:"100%"}}>
         {children}
-      <div style={{position:"absolute",top:topHandle,left:leftHandle}}>
+      {isHandleVisible && <div style={{position:"absolute",top:topHandle,left:leftHandle}}>
         <Handle attributes={attributes} listners={listners}>
         {HandleIcon}
-        </Handle></div>
+        </Handle></div>}
     </div>
 }
 
