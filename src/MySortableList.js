@@ -13,12 +13,21 @@ import {
 import {useState} from 'react';
 import { SortableItem } from './SortableItem';
 import { Card } from 'react-bootstrap';
+import { useAtom, useSetAtom } from 'jotai';
+import { fieldsAtom, handleVisibilityAtom, selectedItemAtom } from './atoms';
 
 function MySortableList() {
   //replace by jotai
-    const [fields, setFields ] = useState([{id:"1",type:"JavaScript"}, {id:"2",type:"Python"}, {id:"3",type:"TypeScript"}]);
+    const [fields, setFields ] = useAtom(fieldsAtom);
+    const setHandleVisibility = useSetAtom(handleVisibilityAtom)
+    const setSelectedItem = useSetAtom(selectedItemAtom)
 
-  return (
+    const handleHandleVisibility =(id)=>{
+      setHandleVisibility(true)
+      setSelectedItem((selectedItem)=>(selectedItem.id === id ? {id:"noSelection", type:"noSelection"} : {...fields.find((item)=>item.id === id)}))
+    }
+
+    return (
     <DndContext
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
@@ -35,7 +44,7 @@ function MySortableList() {
           {fields.map((field,index) =><div key={field.id*Math.random()}>
               
             <SortableItem  topHandle={0} leftHandle={"50%"}   {...field} >
-            <Card body className="m-3">
+            <Card onClick={()=>handleHandleVisibility(field.id)} body className="m-3">
                
                {field.type}
                </Card>
